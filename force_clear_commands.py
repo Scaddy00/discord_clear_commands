@@ -9,16 +9,16 @@ load_dotenv()
 
 # ============================= FORCE CLEAR COMMANDS SCRIPT =============================
 async def force_clear_commands():
-    """Script per forzare la cancellazione di tutti i comandi slash tramite API Discord"""
+    """Script to force delete all slash commands via Discord API"""
     
     TOKEN = getenv('DISCORD_TOKEN')
-    APPLICATION_ID = getenv('APPLICATION_ID')  # Aggiungi questa variabile al tuo .env
+    APPLICATION_ID = getenv('APPLICATION_ID')  # Add this variable to your .env
     GUILD_ID = getenv('GUILD_ID')
     DEBUG_MODE = getenv("DEBUG_MODE") == "1"
     
     if not APPLICATION_ID:
-        print("❌ ERRORE: Devi aggiungere APPLICATION_ID al tuo file .env")
-        print("   Puoi trovarlo nel Discord Developer Portal > Applications > La tua app > General Information")
+        print("❌ ERROR: You need to add APPLICATION_ID to your .env file")
+        print("   You can find it in Discord Developer Portal > Applications > Your app > General Information")
         return
     
     headers = {
@@ -28,65 +28,65 @@ async def force_clear_commands():
     
     base_url = f"https://discord.com/api/v10/applications/{APPLICATION_ID}"
     
-    print("🔄 Avvio script di pulizia forzata comandi...")
+    print("🔄 Starting forced command cleanup script...")
     
     async with aiohttp.ClientSession() as session:
         try:
             if DEBUG_MODE and GUILD_ID:
-                # Modalità DEBUG - cancella comandi dalla guild
-                print(f"🧹 Cancellazione forzata comandi per guild: {GUILD_ID}")
+                # DEBUG mode - delete commands from guild
+                print(f"🧹 Forced deletion of commands for guild: {GUILD_ID}")
                 
-                # Ottieni tutti i comandi della guild
+                # Get all guild commands
                 async with session.get(f"{base_url}/guilds/{GUILD_ID}/commands", headers=headers) as resp:
                     if resp.status == 200:
                         commands = await resp.json()
-                        print(f"📋 Trovati {len(commands)} comandi nella guild")
+                        print(f"📋 Found {len(commands)} commands in guild")
                         
-                        # Cancella ogni comando
+                        # Delete each command
                         for command in commands:
                             command_id = command['id']
                             command_name = command['name']
                             
                             async with session.delete(f"{base_url}/guilds/{GUILD_ID}/commands/{command_id}", headers=headers) as del_resp:
                                 if del_resp.status == 204:
-                                    print(f"✅ Cancellato comando: {command_name}")
+                                    print(f"✅ Deleted command: {command_name}")
                                 else:
-                                    print(f"❌ Errore nel cancellare comando {command_name}: {del_resp.status}")
+                                    print(f"❌ Error deleting command {command_name}: {del_resp.status}")
                     else:
-                        print(f"❌ Errore nel recuperare comandi: {resp.status}")
+                        print(f"❌ Error retrieving commands: {resp.status}")
                 
-                print("✅ Pulizia comandi guild completata!")
+                print("✅ Guild command cleanup completed!")
                 
             else:
-                # Modalità PRODUZIONE - cancella comandi globali
-                print("🌍 Cancellazione forzata comandi globali...")
+                # PRODUCTION mode - delete global commands
+                print("🌍 Forced deletion of global commands...")
                 
-                # Ottieni tutti i comandi globali
+                # Get all global commands
                 async with session.get(f"{base_url}/commands", headers=headers) as resp:
                     if resp.status == 200:
                         commands = await resp.json()
-                        print(f"📋 Trovati {len(commands)} comandi globali")
+                        print(f"📋 Found {len(commands)} global commands")
                         
-                        # Cancella ogni comando
+                        # Delete each command
                         for command in commands:
                             command_id = command['id']
                             command_name = command['name']
                             
                             async with session.delete(f"{base_url}/commands/{command_id}", headers=headers) as del_resp:
                                 if del_resp.status == 204:
-                                    print(f"✅ Cancellato comando: {command_name}")
+                                    print(f"✅ Deleted command: {command_name}")
                                 else:
-                                    print(f"❌ Errore nel cancellare comando {command_name}: {del_resp.status}")
+                                    print(f"❌ Error deleting command {command_name}: {del_resp.status}")
                     else:
-                        print(f"❌ Errore nel recuperare comandi: {resp.status}")
+                        print(f"❌ Error retrieving commands: {resp.status}")
                 
-                print("✅ Pulizia comandi globali completata!")
+                print("✅ Global command cleanup completed!")
             
-            print("\n🎉 Pulizia forzata completata!")
-            print("💡 Ora riavvia il bot con 'python main.py' per registrare i comandi puliti")
+            print("\n🎉 Forced cleanup completed!")
+            print("💡 Now restart the bot with 'python main.py' to register clean commands")
             
         except Exception as e:
-            print(f"❌ Errore durante la pulizia: {e}")
+            print(f"❌ Error during cleanup: {e}")
 
 # ============================= MAIN =============================
 if __name__ == "__main__":

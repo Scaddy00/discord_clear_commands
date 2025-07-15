@@ -9,39 +9,39 @@ load_dotenv()
 
 # ============================= GET APPLICATION ID SCRIPT =============================
 async def get_application_id():
-    """Script per ottenere l'Application ID del bot"""
+    """Script to get the bot's Application ID"""
     
-    # Setup bot con intents
+    # Setup bot with intents
     intents = discord.Intents.all()
     intents.messages = True
     bot = commands.Bot(command_prefix="!", intents=intents)
     
-    print("🔄 Connessione al bot per ottenere l'Application ID...")
+    print("🔄 Connecting to bot to get Application ID...")
     
     try:
-        # Connessione al bot
+        # Connect to bot
         await bot.start(str(getenv('DISCORD_TOKEN')))
     except Exception as e:
-        print(f"❌ Errore durante l'avvio del bot: {e}")
+        print(f"❌ Error during bot startup: {e}")
         return
     
     try:
-        print("⏳ Attendo che il bot sia pronto...")
+        print("⏳ Waiting for bot to be ready...")
         await bot.wait_until_ready()
         
-        # Ottieni l'Application ID
+        # Get Application ID
         application_id = bot.application_id
-        print(f"✅ Application ID trovato: {application_id}")
-        print(f"📝 Aggiungi questa riga al tuo file .env:")
+        print(f"✅ Application ID found: {application_id}")
+        print(f"📝 Add this line to your .env file:")
         print(f"   APPLICATION_ID={application_id}")
         
     except Exception as e:
-        print(f"❌ Errore durante il recupero dell'Application ID: {e}")
+        print(f"❌ Error retrieving Application ID: {e}")
     
     finally:
-        # Chiudi il bot
+        # Close bot
         await bot.close()
-        print("🔚 Bot chiuso")
+        print("🔚 Bot closed")
 
 # ============================= MAIN =============================
 if __name__ == "__main__":

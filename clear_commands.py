@@ -11,65 +11,65 @@ load_dotenv()
 
 # ============================= CLEAR COMMANDS SCRIPT =============================
 async def clear_all_commands():
-    """Script per cancellare tutti i comandi slash e risincronizzare da zero"""
+    """Script to delete all slash commands and resync from scratch"""
     
-    # Setup bot con intents
+    # Setup bot with intents
     intents = discord.Intents.all()
     intents.messages = True
     bot = WishBot(command_prefix=str(getenv('COMMAND_PREFIX')), intents=intents)
     
-    print("🔄 Avvio script di pulizia comandi...")
+    print("🔄 Starting command cleanup script...")
     
     try:
-        # Connessione al bot
+        # Connect to bot
         await bot.start(str(getenv('DISCORD_TOKEN')))
     except Exception as e:
-        print(f"❌ Errore durante l'avvio del bot: {e}")
+        print(f"❌ Error during bot startup: {e}")
         return
     
     try:
-        print("⏳ Attendo che il bot sia pronto...")
+        print("⏳ Waiting for bot to be ready...")
         await bot.wait_until_ready()
         
         if getenv("DEBUG_MODE") == "1":
-            # Modalità DEBUG - pulizia comandi per guild specifica
+            # DEBUG mode - cleanup commands for specific guild
             dev_guild = discord.Object(id=int(getenv('GUILD_ID')))
-            print(f"🧹 Cancellazione comandi per guild: {dev_guild.id}")
+            print(f"🧹 Deleting commands for guild: {dev_guild.id}")
             
-            # Cancella tutti i comandi dalla guild
+            # Delete all commands from guild
             bot.tree.clear_commands(guild=dev_guild)
-            print("✅ Comandi cancellati dalla guild")
+            print("✅ Commands deleted from guild")
             
-            # Sincronizza i comandi con la guild
+            # Sync commands with guild
             synced = await bot.tree.sync(guild=dev_guild)
-            print(f"✅ Comandi risincronizzati con la guild: {len(synced)} comandi")
+            print(f"✅ Commands resynced with guild: {len(synced)} commands")
             
         else:
-            # Modalità PRODUZIONE - pulizia comandi globali
-            print("🌍 Cancellazione comandi globali...")
+            # PRODUCTION mode - cleanup global commands
+            print("🌍 Deleting global commands...")
             
-            # Cancella tutti i comandi globali
+            # Delete all global commands
             bot.tree.clear_commands()
-            print("✅ Comandi globali cancellati")
+            print("✅ Global commands deleted")
             
-            # Sincronizza i comandi globali
+            # Sync global commands
             synced = await bot.tree.sync()
-            print(f"✅ Comandi globali risincronizzati: {len(synced)} comandi")
+            print(f"✅ Global commands resynced: {len(synced)} commands")
         
-        # Mostra i comandi registrati
+        # Show registered commands
         tree = bot.tree._get_all_commands()
         commands_names = [command.name for command in tree]
-        print(f"📋 Comandi attualmente registrati: {commands_names}")
+        print(f"📋 Currently registered commands: {commands_names}")
         
-        print("✅ Pulizia completata con successo!")
+        print("✅ Cleanup completed successfully!")
         
     except Exception as e:
-        print(f"❌ Errore durante la pulizia: {e}")
+        print(f"❌ Error during cleanup: {e}")
     
     finally:
-        # Chiudi il bot
+        # Close bot
         await bot.close()
-        print("🔚 Bot chiuso")
+        print("🔚 Bot closed")
 
 # ============================= MAIN =============================
 if __name__ == "__main__":
