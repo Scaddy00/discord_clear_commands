@@ -16,6 +16,26 @@ async def get_application_id():
     intents.messages = True
     bot = commands.Bot(command_prefix="!", intents=intents)
     
+    # Flag to track when we've got the application ID
+    application_id_received = False
+    
+    @bot.event
+    async def on_ready():
+        """Event triggered when bot is ready"""
+        nonlocal application_id_received
+        print(f"✅ Bot is ready! Logged in as {bot.user}")
+        
+        # Get Application ID
+        application_id = bot.application_id
+        print(f"✅ Application ID found: {application_id}")
+        print(f"📝 Add this line to your .env file:")
+        print(f"   APPLICATION_ID={application_id}")
+        
+        application_id_received = True
+        
+        # Close the bot after getting the ID
+        await bot.close()
+    
     print("🔄 Connecting to bot to get Application ID...")
     
     try:
@@ -25,23 +45,10 @@ async def get_application_id():
         print(f"❌ Error during bot startup: {e}")
         return
     
-    try:
-        print("⏳ Waiting for bot to be ready...")
-        await bot.wait_until_ready()
-        
-        # Get Application ID
-        application_id = bot.application_id
-        print(f"✅ Application ID found: {application_id}")
-        print(f"📝 Add this line to your .env file:")
-        print(f"   APPLICATION_ID={application_id}")
-        
-    except Exception as e:
-        print(f"❌ Error retrieving Application ID: {e}")
-    
-    finally:
-        # Close bot
-        await bot.close()
-        print("🔚 Bot closed")
+    if application_id_received:
+        print("🔚 Bot closed successfully")
+    else:
+        print("❌ Failed to get Application ID")
 
 # ============================= MAIN =============================
 if __name__ == "__main__":
